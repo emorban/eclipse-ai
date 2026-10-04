@@ -134,7 +134,6 @@ If you discover something that appears sensitive, please use the reporting guida
 ## Related work
 
 - **[DevHouse AI](https://github.com/emorban/devhouse-ai)** — production-oriented AI workflow, CRM, voice, consent, and reliability systems
-- **[Elison’s World](https://github.com/emorban/elison-world-website)** — interactive frontend, storytelling, accessibility, and creative technology
 
 ## Portfolio use
 
