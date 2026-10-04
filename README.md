@@ -12,9 +12,10 @@ This repository is intentionally sanitized for public inspection. The private Ec
 
 - **[Case study](./docs/CASE-STUDY.md)** — problem, design decisions, ownership, and lessons
 - **[Architecture](./docs/ARCHITECTURE.md)** — public system map and boundaries
+- **[Approval kernel](./approval_kernel)** — primary code: a stdlib-only reference implementation of the approval boundary (versioned candidates, owner challenges, tamper-evident ledger, scoped authority tokens)
 - **[Engineering highlights](./docs/ENGINEERING-HIGHLIGHTS.md)** — memory, tools, delegation, verification, and safety
 - **[Representative code](./samples)** — small sanitized implementation examples
-- **[Executable tests](./tests)** — verification for the public samples
+- **[Executable tests](./tests)** — adversarial tests for the approval kernel plus the public samples
 
 ## What Eclipse explores
 
@@ -64,11 +65,13 @@ The system can prepare, analyze, and execute within defined scopes, but conseque
 
 ## Run the public verification suite
 
-No third-party dependency is required for the examples.
+No third-party dependency is required. Python 3.11+ is enough for everything here.
 
 ```bash
 python -m unittest discover -s tests -v
 ```
+
+Most of the suite covers [`approval_kernel`](./approval_kernel), and most of those tests are adversarial: tampered payloads, replayed nonces, expired sessions and authorities, stale versions, scope escalation, exhausted limits, direct SQLite tampering caught by the hash-chain verifier, and concurrent threads racing for one limited authority.
 
 ## What I owned
 
@@ -79,6 +82,16 @@ The public repository is meant to demonstrate that systems thinking without publ
 ## Repository guide
 
 ```text
+approval_kernel/
+  README.md          invariants, threat model, usage
+  canonical.py       canonical JSON + content hashing
+  candidates.py      immutable, versioned action candidates + risk registry
+  sessions.py        owner sessions, challenges, single-use nonces
+  ledger.py          append-only, HMAC hash-chained decision ledger
+  authority.py       scoped, signed, expiring authority tokens
+  kernel.py          the approval boundary that wires the pieces together
+  storage.py         SQLite schema, triggers, transactions
+  clock.py, errors.py
 docs/
   CASE-STUDY.md
   ARCHITECTURE.md
@@ -88,6 +101,11 @@ samples/
   tool_router.py
   verification_gate.py
 tests/
+  approval_support.py
+  test_approval_authority.py
+  test_approval_candidates.py
+  test_approval_ledger.py
+  test_approval_sessions.py
   test_memory_store.py
   test_tool_router.py
   test_verification_gate.py

@@ -45,6 +45,17 @@ Read-only verification is usually safe to automate broadly. Writes require tight
 
 This pattern matters whether the action is editing a file, changing infrastructure, sending communication, or mutating application state.
 
+## Approval kernel (reference implementation)
+
+[`../approval_kernel`](../approval_kernel) is a standalone, stdlib-only implementation of that write boundary, written for this public repository. It is not the private runtime code. It turns the checklist above into enforced invariants:
+
+- an agent proposes an **immutable, versioned candidate** whose payload is hashed in canonical JSON form
+- an owner decides through a **single-use challenge** bound to one exact candidate version, signed with a session secret the agent never holds
+- each decision is appended to a **hash-chained ledger** in SQLite. Triggers block edits, and a keyed verifier detects edits, deletions, reordering, and rewrites
+- approval mints a **scoped, expiring authority token**, checked again at use time against the latest version, the ledger state, and an atomically enforced attempt and spend budget
+
+See [`../approval_kernel/README.md`](../approval_kernel/README.md) for the invariants and threat model.
+
 ## Verification before completion
 
 A task should be considered complete only when its acceptance criteria can be observed. Depending on the task, that might mean:
@@ -62,6 +73,7 @@ The verification layer prevents “the agent said it finished” from becoming t
 
 The public repository uses Python’s standard library so the examples remain easy to inspect and run. Tests focus on the core contracts:
 
+- approval-boundary invariants under adversarial input (tampering, replay, expiry, scope escalation, concurrency)
 - memory normalization and retrieval
 - rejection of unauthorized writes
 - rejection of unknown tools
