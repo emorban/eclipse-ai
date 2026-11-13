@@ -8,6 +8,13 @@ Eclipse is an attempt to answer a harder question than “can a model respond in
 
 This repository is intentionally sanitized for public inspection. The private Eclipse runtime, personal memory, credentials, live configuration, operational runbooks, and provider-specific infrastructure are not published here.
 
+## Ownership and status
+
+- **Owner:** Elison Morban / ELISON INC (see [`NOTICE.md`](./NOTICE.md))
+- **Type:** public, sanitized engineering portfolio; not a deployable product or the Eclipse runtime itself
+- **Status:** active. Last code change was 2026-10-04, when the `approval_kernel` reference implementation was added
+- **Stack:** Python standard library only (3.11+, because `approval_kernel` uses `enum.StrEnum`). CI runs on Python 3.12
+
 ## Start here
 
 - **[Case study](./docs/CASE-STUDY.md)** — problem, design decisions, ownership, and lessons
@@ -65,11 +72,13 @@ The system can prepare, analyze, and execute within defined scopes, but conseque
 
 ## Run the public verification suite
 
-No third-party dependency is required. Python 3.11+ is enough for everything here.
+You don't need any third-party dependencies. Python 3.11+ is enough for everything here. Run from the repository root so `samples` and `approval_kernel` can be imported:
 
 ```bash
 python -m unittest discover -s tests -v
 ```
+
+The [Portfolio CI](./.github/workflows/portfolio-ci.yml) workflow runs the same command on pushes and pull requests to `main`. There is no build step and nothing to install.
 
 Most of the suite covers [`approval_kernel`](./approval_kernel), and most of those tests are adversarial: tampered payloads, replayed nonces, expired sessions and authorities, stale versions, scope escalation, exhausted limits, direct SQLite tampering caught by the hash-chain verifier, and concurrent threads racing for one limited authority.
 
@@ -109,8 +118,9 @@ tests/
   test_memory_store.py
   test_tool_router.py
   test_verification_gate.py
-.github/workflows/
-  portfolio-ci.yml
+.github/
+  workflows/portfolio-ci.yml
+  pull_request_template.md   public-boundary checklist
 SECURITY.md
 NOTICE.md
 ```
@@ -142,3 +152,5 @@ Source in this repository is published for inspection and evaluation. No open-so
 ---
 
 **Eclipse AI · ELISON INC**
+
+Last reviewed: 2026-11-12
